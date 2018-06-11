@@ -1,0 +1,28 @@
+{
+  "name": "noaa-solar-calculator",
+  "version": "0.1.0",
+  "description": "Implementation of USA's National Oceanic and Atmospheric Administration (NOAA) Solar Calculator, allowing to find Sunrise, Sunset, Solar Noon and Solar Position for Any Place on Earth",
+  "main": "src/js/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mcxsic/noaa-solar-calculator.git"
+  },
+  "keywords": [
+    "sunset",
+    "sunrise",
+    "solar",
+    "position"
+  ],
+  "author": "Michel Comin <mcxsic>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mcxsic/solar-calculator/issues"
+  },
+  "homepage": "https://github.com/mcxsic/solar-calculator#readme",
+  "dependencies": {
+    "luxon": "^1.2.1"
+  }
+}
