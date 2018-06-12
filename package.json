@@ -22,7 +22,5 @@
     "url": "https://github.com/mcxsic/solar-calculator/issues"
   },
   "homepage": "https://github.com/mcxsic/solar-calculator#readme",
-  "dependencies": {
-    "luxon": "^1.2.1"
-  }
+  "dependencies": {}
 }
