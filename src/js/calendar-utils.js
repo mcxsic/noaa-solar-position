@@ -6,19 +6,29 @@ function _getDateInOtherTimezone(time, timezoneOffsetMillis) {
   var utc = d.getTime() + d.getTimezoneOffset() * tc.MINUTES_TO_MILLIS;
 
   var nd = new Date(utc + timezoneOffsetMillis);
-  console.log('The local time in ' + offset + ' is ' + nd.toLocaleString());
+  console.log(
+    'The local time in ' + timezoneOffsetMillis + ' is ' + nd.toLocaleString()
+  );
 
   return nd;
 }
 
 function _isLeapYear(year) {
-  if (isNan(year)) return null;
+  if (isNaN(year)) return null;
   return year % 4 == 0 && (year % 100 != 0 || year % 400 == 0);
 }
 
 function _getDateBeginningYear(date, timezoneOffsetMillis) {
   return _getDateInOtherTimezone(
-    Date.UTC(date.getFullYear(), 0, 1) - offsetMillis,
+    Date.UTC(date.getFullYear(), 0, 1) - timezoneOffsetMillis,
+    timezoneOffsetMillis
+  );
+}
+
+function _getDateBeginningDay(date, timezoneOffsetMillis) {
+  return _getDateInOtherTimezone(
+    Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) -
+      timezoneOffsetMillis,
     timezoneOffsetMillis
   );
 }
@@ -41,7 +51,7 @@ function _fractionYear(dateSinceEpocMillis, timezoneOffsetMillis) {
   var hourOfDay = date.getHours();
 
   var daysInYear = _isLeapYear(year) ? 366 : 365;
-  return ((2 * Math.PI) / daysInYear) * (dayOfYear + (hourOfDay - 12) / 24);
+  return (1 / daysInYear) * (dayOfYear + (hourOfDay - 12) / 24);
 }
 
 module.exports = {
@@ -53,6 +63,13 @@ module.exports = {
       timezoneOffsetMillis
     );
     return _getDayOfYear(date, timezoneOffsetMillis);
+  },
+  getDateBeginningDay: function(dateSinceEpocMillis, timezoneOffsetMillis) {
+    var date = _getDateInOtherTimezone(
+      dateSinceEpocMillis,
+      timezoneOffsetMillis
+    );
+    return _getDateBeginningDay(date, timezoneOffsetMillis);
   },
   fractionYear: _fractionYear,
 };

@@ -33,9 +33,10 @@ function _calculatePosition(
   eqTime,
   solarDecl
 ) {
+  var timezoneOffsetMillis = timezoneOffsetHours * tc.HOURS_TO_MILLIS;
   var date = calendarUtils.getDateInTimezone(
     dateSinceEpocMillis,
-    timezoneOffsetHours
+    timezoneOffsetMillis
   );
   var hourOfDay = date.getHours();
   var seconds = date.getSeconds();
@@ -71,6 +72,7 @@ function _calculatePosition(
 }
 
 function _calculateSunriseSunsetNoon(
+  dateSinceEpocMillis,
   timezoneOffsetHours,
   latitude,
   longitude,
@@ -78,7 +80,13 @@ function _calculateSunriseSunsetNoon(
   solarDecl
 ) {
   var timezoneOffsetMin = timezoneOffsetHours * tc.HOURS_TO_MINUTES;
+  var timezoneOffsetMillis = timezoneOffsetHours * tc.HOURS_TO_MILLIS;
+
   var latRad = latitude * mc.DEGREES_TO_RADIANS;
+  var cbd = calendarUtils.getDateBeginningDay(
+    dateSinceEpocMillis,
+    timezoneOffsetMillis
+  );
 
   /* Calculate sunrise, sunset and solar noon */
   var ha1 = Math.acos(
@@ -92,14 +100,17 @@ function _calculateSunriseSunsetNoon(
   times.sunrise = 720 - 4 * (longitude + ha1) - eqTime; // sunrise in minutes at UTC+0
   times.sunrise += timezoneOffsetMin; // adjust to timezone, minutes
   times.sunrise *= tc.MINUTES_TO_MILLIS; // convert to millis
+  times.sunrise += cbd.getTime(); // convert to millis
 
   times.sunset = 720 - 4 * (longitude - ha1) - eqTime; // sunset in minutes at UTC+0
   times.sunset += timezoneOffsetMin; // adjust to timezone, minutes
   times.sunset *= tc.MINUTES_TO_MILLIS; // convert to millis
+  times.sunset += cbd.getTime();
 
   times.solarNoon = 720 - 4 * longitude - eqTime; // solar noon in minutes at UTC+0
   times.solarNoon += timezoneOffsetMin; // adjust to timezone, minutes
   times.solarNoon *= tc.MINUTES_TO_MILLIS; // convert to millis
+  times.solarNoon += cbd.getTime();
 
   return times;
 }
@@ -107,6 +118,7 @@ function _calculateSunriseSunsetNoon(
 function SolarPosition() {
   this.zenith = 0; // Radians
   this.azimuth = 0; // Radians
+  this.times = { sunrise: 0, sunset: 0, solarNoon: 0 };
 }
 
 SolarPosition.prototype.updateSolarPosition = function(
@@ -115,13 +127,14 @@ SolarPosition.prototype.updateSolarPosition = function(
   latitude,
   longitude
 ) {
-  var timezoneOffsetMillis = timezoneOffsetHours * tcHOURS_TO_MILLIS;
+  var timezoneOffsetMillis = timezoneOffsetHours * tc.HOURS_TO_MILLIS;
   var latRad = latitude * mc.DEGREES_TO_RADIANS;
 
   var fractionYear = calendarUtils.fractionYear(
     dateSinceEpocMillis,
     timezoneOffsetMillis
   );
+  fractionYear *= 2 * Math.PI; // transform from [0,1] to [0, 2 * PI]
   var eqTime = _equationOfTime(fractionYear);
   var solarDecl = _solarDeclinationAngle(fractionYear);
 
@@ -138,12 +151,14 @@ SolarPosition.prototype.updateSolarPosition = function(
   this.azimuth = position.azimuth; // Radians
 
   var times = _calculateSunriseSunsetNoon(
-    timezoneOffsetMillis,
+    dateSinceEpocMillis,
+    timezoneOffsetHours,
     latitude,
     longitude,
     eqTime,
     solarDecl
   );
+  this.times = times;
 };
 
 module.exports = SolarPosition;

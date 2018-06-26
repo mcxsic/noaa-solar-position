@@ -4,7 +4,7 @@
   "description": "Implementation of USA's National Oceanic and Atmospheric Administration (NOAA) Solar Calculator, allowing to find Sunrise, Sunset, Solar Noon and Solar Position for Any Place on Earth",
   "main": "src/js/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "debug": "node --nolazy --inspect-brk=9229 tests/js/main.js"
   },
   "repository": {
     "type": "git",
