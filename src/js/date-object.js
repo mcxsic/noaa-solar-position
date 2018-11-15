@@ -91,8 +91,12 @@ DateObject.prototype.getTime = function() {
     return this.time;
 };
 
-DateObject.prototype.getTimezone = function() {
+DateObject.prototype.getTimezoneOffsetInMin = function() {
     return this.tz;
+};
+
+DateObject.prototype.getTimezoneOffsetInMillis = function() {
+    return this.tzMillis;
 };
 
 DateObject.prototype.toString = function() {
