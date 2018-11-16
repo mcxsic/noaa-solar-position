@@ -7,7 +7,7 @@ var places = [
     { name: 'LA', lat: 33.9876385, lng: -118.472396, tz: -8 },
     { name: 'Paris', lat: 48.8535541, lng: 2.3471351, tz: 1 }
 ];
-var selected = 1;
+var selected = 0;
 
 var location = new LocationObject(places[selected].lat, places[selected].lng);
 var date = new DateObject(

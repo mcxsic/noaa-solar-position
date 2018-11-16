@@ -1,6 +1,6 @@
-function Location(latitude, latitude) {
+function Location(latitude, longitude) {
     this.lat = latitude;
-    this.lng = latitude;
+    this.lng = longitude;
 }
 
 Location.prototype.getLatitude = function() {
