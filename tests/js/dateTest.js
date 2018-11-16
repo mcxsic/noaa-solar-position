@@ -1,7 +1,7 @@
-DateObject = require('../../src/js/date-object');
+Moment = require('../../src/js/moment');
 constants = require('../../src/js/time-utils').constants;
 var now = Date.now();
-var dateObj = new DateObject(now, -8 * constants.HOURS_TO_MINUTES);
+var dateObj = new Moment(now, -8 * constants.HOURS_TO_MINUTES);
 var regularDate = new Date(dateObj.getTime());
 
 console.log('//// CURRENT TIME ////');

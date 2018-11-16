@@ -1,7 +1,13 @@
 var tu = require('./time-utils');
 var constants = tu.constants;
-var DateObject = require('./date-object');
+var Moment = require('./moment');
+var Location = require('./location');
 var mc = require('./math-constants');
+
+var dayStates = {
+    DAY: 'day',
+    NIGHT: 'night'
+};
 
 function _equationOfTime(fractionalYear) {
     return (
@@ -79,22 +85,19 @@ function _calculateSunriseSunsetNoon(date, coordinates, eqTime, solarDecl) {
     times.sunrise += cbd.getTimezoneOffsetInMin(); // adjust to timezone, minutes
     times.sunrise *= constants.MINUTES_TO_MILLIS; // convert to millis
     times.sunrise += cbd.getTime(); // convert to millis
-    times.sunrise = new DateObject(times.sunrise, cbd.getTimezoneOffsetInMin());
+    times.sunrise = new Moment(times.sunrise, cbd.getTimezoneOffsetInMin());
 
     times.sunset = 720 - 4 * (longitude - ha1) - eqTime; // sunset in minutes at UTC+0
     times.sunset += cbd.getTimezoneOffsetInMin(); // adjust to timezone, minutes
     times.sunset *= constants.MINUTES_TO_MILLIS; // convert to millis
     times.sunset += cbd.getTime();
-    times.sunset = new DateObject(times.sunset, cbd.getTimezoneOffsetInMin());
+    times.sunset = new Moment(times.sunset, cbd.getTimezoneOffsetInMin());
 
     times.solarNoon = 720 - 4 * longitude - eqTime; // solar noon in minutes at UTC+0
     times.solarNoon += cbd.getTimezoneOffsetInMin(); // adjust to timezone, minutes
     times.solarNoon *= constants.MINUTES_TO_MILLIS; // convert to millis
     times.solarNoon += cbd.getTime();
-    times.solarNoon = new DateObject(
-        times.solarNoon,
-        cbd.getTimezoneOffsetInMin()
-    );
+    times.solarNoon = new Moment(times.solarNoon, cbd.getTimezoneOffsetInMin());
 
     return times;
 }
@@ -103,17 +106,17 @@ function _calculateState(date, coordinates, eqTime, solarDecl, times) {
     var currentTime = date.getTime();
     var sunriseTime = times.sunrise.getTime();
     var sunsetTime = times.sunset.getTime();
-    var state = { state: 'day', progress: 0 };
+    var state = { state: dayStates.DAY, progress: 0 };
     state.state =
         currentTime >= sunriseTime && currentTime < sunsetTime
-            ? 'day'
-            : 'night';
+            ? dayStates.DAY
+            : dayStates.NIGHT;
 
     var start = sunriseTime;
     var end = sunsetTime;
-    if (state.state == 'night') {
+    if (state.state == dayStates.NIGHT) {
         if (currentTime < sunriseTime) {
-            var prevDate = new DateObject(
+            var prevDate = new Moment(
                 date.getTime() - constants.DAYS_TO_MILLIS,
                 date.getTimezoneOffsetInMin()
             ); // move a day
@@ -126,7 +129,7 @@ function _calculateState(date, coordinates, eqTime, solarDecl, times) {
             start = timesPrev.sunset.getTime();
             end = sunriseTime;
         } else {
-            var nextDate = new DateObject(
+            var nextDate = new Moment(
                 date.getTime() + constants.DAYS_TO_MILLIS,
                 date.getTimezoneOffsetInMin()
             ); // move a day
@@ -147,8 +150,8 @@ function _calculateState(date, coordinates, eqTime, solarDecl, times) {
 }
 /**
  * Calculates Solar Position
- * @param {DateObject} date dateobject
- * @param {LocationObject} coordinates a location object
+ * @param {Moment} date Moment
+ * @param {Location} coordinates a location object
  */
 function SolarPosition(date, coordinates) {
     //TODO: check that both objects are right
@@ -177,4 +180,9 @@ function SolarPosition(date, coordinates) {
     };
 }
 
-module.exports = SolarPosition;
+module.exports = {
+    SolarPosition: SolarPosition,
+    Moment: Moment,
+    Location: Location,
+    dayStates: dayStates
+};

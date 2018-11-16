@@ -1,6 +1,6 @@
 var tu = require('./time-utils');
 
-function DateObject(dateTime, timezoneOffset) {
+function Moment(dateTime, timezoneOffset) {
     // Time in millis since epoc
     this.time = dateTime;
     /* In minutes, from UTC+0 */
@@ -29,21 +29,18 @@ function DateObject(dateTime, timezoneOffset) {
     this.millis = fixedDate.getMilliseconds();
 }
 
-DateObject.prototype.getDateAtBeginningYear = function() {
-    return new DateObject(
-        tu.getTimeInitYear(this.year, this.tzMillis),
-        this.tz
-    );
+Moment.prototype.getDateAtBeginningYear = function() {
+    return new Moment(tu.getTimeInitYear(this.year, this.tzMillis), this.tz);
 };
 
-DateObject.prototype.getDateAtBeginningDay = function() {
-    return new DateObject(
+Moment.prototype.getDateAtBeginningDay = function() {
+    return new Moment(
         tu.getTimeInitDay(this.year, this.month, this.day, this.tzMillis),
         this.tz
     );
 };
 
-DateObject.prototype.getFractionalYear = function() {
+Moment.prototype.getFractionalYear = function() {
     var doy = this.getDayOfYear();
     var hour = this.getHours();
     var diy = tu.numberOfDaysInYear(this.getYear());
@@ -51,55 +48,55 @@ DateObject.prototype.getFractionalYear = function() {
     return (1 / diy) * (doy + (hour - 12) / 24);
 };
 
-DateObject.prototype.getDayOfYear = function() {
+Moment.prototype.getDayOfYear = function() {
     return this.dayOfYear;
 };
 
-DateObject.prototype.getYear = function() {
+Moment.prototype.getYear = function() {
     return this.year;
 };
 
-DateObject.prototype.getMonth = function() {
+Moment.prototype.getMonth = function() {
     return this.month;
 };
 
-DateObject.prototype.getDay = function() {
+Moment.prototype.getDay = function() {
     return this.day;
 };
 
-DateObject.prototype.getDayOfWeek = function() {
+Moment.prototype.getDayOfWeek = function() {
     return this.dayOfWeek;
 };
 
-DateObject.prototype.getHours = function() {
+Moment.prototype.getHours = function() {
     return this.hour;
 };
 
-DateObject.prototype.getMinutes = function() {
+Moment.prototype.getMinutes = function() {
     return this.minutes;
 };
 
-DateObject.prototype.getSeconds = function() {
+Moment.prototype.getSeconds = function() {
     return this.seconds;
 };
 
-DateObject.prototype.getMilliseconds = function() {
+Moment.prototype.getMilliseconds = function() {
     return this.millis;
 };
 
-DateObject.prototype.getTime = function() {
+Moment.prototype.getTime = function() {
     return this.time;
 };
 
-DateObject.prototype.getTimezoneOffsetInMin = function() {
+Moment.prototype.getTimezoneOffsetInMin = function() {
     return this.tz;
 };
 
-DateObject.prototype.getTimezoneOffsetInMillis = function() {
+Moment.prototype.getTimezoneOffsetInMillis = function() {
     return this.tzMillis;
 };
 
-DateObject.prototype.toString = function() {
+Moment.prototype.toString = function() {
     return (
         tu.weekDayName(this.getDayOfWeek() - 1) +
         ' ' +
@@ -115,7 +112,7 @@ DateObject.prototype.toString = function() {
     );
 };
 
-DateObject.prototype.timeToString = function() {
+Moment.prototype.timeToString = function() {
     return (
         tu.formatTimeValue(this.getHours()) +
         ':' +
@@ -125,7 +122,7 @@ DateObject.prototype.timeToString = function() {
     );
 };
 
-DateObject.prototype.getTimezoneName = function() {
+Moment.prototype.getTimezoneName = function() {
     var hours = Math.abs(Math.floor(this.tz / 60));
     var minutes = Math.abs(this.tz % 60);
     var sign = Math.sign(this.tz);
@@ -138,4 +135,4 @@ DateObject.prototype.getTimezoneName = function() {
     );
 };
 
-module.exports = DateObject;
+module.exports = Moment;
