@@ -3,26 +3,26 @@ var constants = tu.constants;
 var DateObject = require('./date-object');
 var mc = require('./math-constants');
 
-function _equationOfTime(fractionYear) {
+function _equationOfTime(fractionalYear) {
     return (
         229.18 *
         (0.000075 +
-            0.001868 * Math.cos(fractionYear) -
-            0.032077 * Math.sin(fractionYear) -
-            0.014615 * Math.cos(2 * fractionYear) -
-            0.040849 * Math.sin(2 * fractionYear))
+            0.001868 * Math.cos(fractionalYear) -
+            0.032077 * Math.sin(fractionalYear) -
+            0.014615 * Math.cos(2 * fractionalYear) -
+            0.040849 * Math.sin(2 * fractionalYear))
     ); // minutes
 }
 
-function _solarDeclinationAngle(fractionYear) {
+function _solarDeclinationAngle(fractionalYear) {
     return (
         0.006918 -
-        0.399912 * Math.cos(fractionYear) +
-        0.070257 * Math.sin(fractionYear) -
-        0.006758 * Math.cos(2 * fractionYear) +
-        0.000907 * Math.sin(2 * fractionYear) -
-        0.002697 * Math.cos(3 * fractionYear) +
-        0.00148 * Math.sin(3 * fractionYear)
+        0.399912 * Math.cos(fractionalYear) +
+        0.070257 * Math.sin(fractionalYear) -
+        0.006758 * Math.cos(2 * fractionalYear) +
+        0.000907 * Math.sin(2 * fractionalYear) -
+        0.002697 * Math.cos(3 * fractionalYear) +
+        0.00148 * Math.sin(3 * fractionalYear)
     ); // radians
 }
 
@@ -154,11 +154,11 @@ function SolarPosition(date, coordinates) {
     //TODO: check that both objects are right
 
     // Fractional year
-    var fractionYear = date.getFractionOfYear() * 2 * Math.PI; // transform from [0,1] to [0, 2 * PI]
+    var fractionalYear = date.getFractionalYear() * 2 * Math.PI; // transform from [0,1] to [0, 2 * PI]
 
     // Equation of time, solar declination
-    var eqTime = _equationOfTime(fractionYear);
-    var solarDecl = _solarDeclinationAngle(fractionYear);
+    var eqTime = _equationOfTime(fractionalYear);
+    var solarDecl = _solarDeclinationAngle(fractionalYear);
 
     var position = _calculatePosition(date, coordinates, eqTime, solarDecl);
     var times = _calculateSunriseSunsetNoon(

@@ -43,7 +43,7 @@ DateObject.prototype.getDateAtBeginningDay = function() {
     );
 };
 
-DateObject.prototype.getFractionOfYear = function() {
+DateObject.prototype.getFractionalYear = function() {
     var doy = this.getDayOfYear();
     var hour = this.getHours();
     var diy = tu.numberOfDaysInYear(this.getYear());

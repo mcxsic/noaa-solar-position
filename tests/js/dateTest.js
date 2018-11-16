@@ -11,7 +11,7 @@ console.log('Date Object ts:', dateObj.getTime());
 console.log('Date JS:', regularDate.toLocaleString());
 console.log('Date JS ts:', regularDate.getTime());
 console.log('Date Object day of year:', dateObj.getDayOfYear());
-console.log('Date Object fraction of year:', dateObj.getFractionOfYear());
+console.log('Date Object fraction of year:', dateObj.getFractionalYear());
 
 console.log('');
 
@@ -24,7 +24,7 @@ console.log('Date Object ts:', dateObj.getTime());
 console.log('Date JS:', regularDate.toLocaleString());
 console.log('Date JS ts:', regularDate.getTime());
 console.log('Date Object day of year:', dateObj.getDayOfYear());
-console.log('Date Object fraction of year:', dateObj.getFractionOfYear());
+console.log('Date Object fraction of year:', dateObj.getFractionalYear());
 
 console.log('');
 
@@ -37,4 +37,4 @@ console.log('Date Object ts:', dateObj.getTime());
 console.log('Date JS:', regularDate.toLocaleString());
 console.log('Date JS ts:', regularDate.getTime());
 console.log('Date Object day of year:', dateObj.getDayOfYear());
-console.log('Date Object fraction of year:', dateObj.getFractionOfYear());
+console.log('Date Object fraction of year:', dateObj.getFractionalYear());
