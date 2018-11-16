@@ -58,6 +58,7 @@ function _calculatePosition(date, coordinates, eqTime, solarDecl) {
     var azimuth =
         180 * mc.DEGREES_TO_RADIANS + signSolarAngle * Math.acos(acosAzimuth); // rad
 
+    // radiants
     return { zenith: zenith, azimuth: azimuth };
 }
 
@@ -73,7 +74,7 @@ function _calculateSunriseSunsetNoon(date, coordinates, eqTime, solarDecl) {
     ); // radians
     ha1 *= mc.RADIANS_TO_DEGREES; // degrees
 
-    var times = { sunrise: 0, sunset: 0, solarNoon: 0 };
+    var times = { sunrise: 0, sunset: 0, solarNoon: 0, state: 'day' };
     times.sunrise = 720 - 4 * (longitude + ha1) - eqTime; // sunrise in minutes at UTC+0
     times.sunrise += cbd.getTimezoneOffsetInMin(); // adjust to timezone, minutes
     times.sunrise *= constants.MINUTES_TO_MILLIS; // convert to millis
@@ -87,7 +88,7 @@ function _calculateSunriseSunsetNoon(date, coordinates, eqTime, solarDecl) {
     times.sunset = new DateObject(times.sunset, cbd.getTimezoneOffsetInMin());
 
     times.solarNoon = 720 - 4 * longitude - eqTime; // solar noon in minutes at UTC+0
-    // times.solarNoon += cbd.getTimezoneOffsetInMin(); // adjust to timezone, minutes
+    times.solarNoon += cbd.getTimezoneOffsetInMin(); // adjust to timezone, minutes
     times.solarNoon *= constants.MINUTES_TO_MILLIS; // convert to millis
     times.solarNoon += cbd.getTime();
     times.solarNoon = new DateObject(
@@ -98,6 +99,52 @@ function _calculateSunriseSunsetNoon(date, coordinates, eqTime, solarDecl) {
     return times;
 }
 
+function _calculateState(date, coordinates, eqTime, solarDecl, times) {
+    var currentTime = date.getTime();
+    var sunriseTime = times.sunrise.getTime();
+    var sunsetTime = times.sunset.getTime();
+    var state = { state: 'day', progress: 0 };
+    state.state =
+        currentTime >= sunriseTime && currentTime < sunsetTime
+            ? 'day'
+            : 'night';
+
+    var start = sunriseTime;
+    var end = sunsetTime;
+    if (state.state == 'night') {
+        if (currentTime < sunriseTime) {
+            var prevDate = new DateObject(
+                date.getTime() - constants.DAYS_TO_MILLIS,
+                date.getTimezoneOffsetInMin()
+            ); // move a day
+            var timesPrev = _calculateSunriseSunsetNoon(
+                prevDate,
+                coordinates,
+                eqTime,
+                solarDecl
+            );
+            start = timesPrev.sunset.getTime();
+            end = sunriseTime;
+        } else {
+            var nextDate = new DateObject(
+                date.getTime() + constants.DAYS_TO_MILLIS,
+                date.getTimezoneOffsetInMin()
+            ); // move a day
+            var timesNext = _calculateSunriseSunsetNoon(
+                nextDate,
+                coordinates,
+                eqTime,
+                solarDecl
+            );
+            start = sunsetTime;
+            end = timesNext.sunrise.getTime();
+        }
+    }
+
+    state.progress = (currentTime - start) / (end - start);
+
+    return state;
+}
 /**
  * Calculates Solar Position
  * @param {DateObject} date dateobject
@@ -109,7 +156,7 @@ function SolarPosition(date, coordinates) {
     // Fractional year
     var fractionYear = date.getFractionOfYear() * 2 * Math.PI; // transform from [0,1] to [0, 2 * PI]
 
-    // Equation of time, // solar declination
+    // Equation of time, solar declination
     var eqTime = _equationOfTime(fractionYear);
     var solarDecl = _solarDeclinationAngle(fractionYear);
 
@@ -121,7 +168,13 @@ function SolarPosition(date, coordinates) {
         solarDecl
     );
 
-    return { times: times, zenith: position.zenith, azimuth: position.azimuth }; // Rad // Rad
+    var state = _calculateState(date, coordinates, eqTime, solarDecl, times);
+
+    return {
+        times: times,
+        position: position,
+        state: state
+    };
 }
 
 module.exports = SolarPosition;
