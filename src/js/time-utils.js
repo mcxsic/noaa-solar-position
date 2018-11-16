@@ -61,7 +61,7 @@ function _getNumberOfDaysInYear(year) {
  * @param {String} value the number that we need to padding
  */
 function _formatTimeValue(value) {
-    var out = value / 10 > 1 ? '' : '0';
+    var out = value / 10 >= 1 ? '' : '0';
     return out + value;
 }
 
